@@ -18,7 +18,12 @@
                             <span class="es-comp-icon-fallback" style="background: {{ $cd['color'] }};"></span>
                         @endif
                     </span>
-                    <span class="es-comp-name">{{ $component->name }}</span>
+                    <div class="es-comp-text">
+                        <span class="es-comp-name">{{ $component->name }}</span>
+                        @if (filled($component->description))
+                            <span class="es-comp-desc">{{ $component->description }}</span>
+                        @endif
+                    </div>
                     <span class="es-comp-status" style="color: {{ $cd['color'] }};">{{ $cd['label'] }}</span>
                     @if ($uptime)
                         <span class="es-comp-uptime">{{ number_format($uptime['uptime_pct'], 2, ',', ' ') }}<span class="es-comp-uptime-suffix">%</span></span>

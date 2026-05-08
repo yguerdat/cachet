@@ -39,6 +39,7 @@ class ScheduleNotificationMail extends Mailable implements ShouldQueue
                 'schedule' => $this->schedule,
                 'subscriber' => $this->subscriber,
                 'isUpdate' => $this->isUpdate,
+                'scheduleUrl' => route('status-page.schedule', $this->schedule),
                 'manageUrl' => route('subscribe.manage', $this->subscriber),
                 'unsubscribeUrl' => route('subscribe.unsubscribe', $this->subscriber),
             ],

@@ -98,4 +98,6 @@
             </div>
         </form>
     </div>
+
+    @include('subscribe.partials.global-toggle-script')
 </x-cachet::cachet>

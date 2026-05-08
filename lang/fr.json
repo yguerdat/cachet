@@ -1,4 +1,6 @@
 {
+    "subscribe.banner.text": "Recevez par e-mail ou SMS les mises à jour des incidents et maintenances.",
+    "subscribe.banner.cta": "S'abonner aux notifications",
     "subscribe.title": "S'abonner aux notifications",
     "subscribe.intro": "Recevez par e-mail et\/ou SMS les mises à jour des incidents et maintenances planifiées.",
     "subscribe.field.email": "Adresse e-mail",

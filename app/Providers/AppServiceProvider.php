@@ -21,7 +21,9 @@ use App\Services\Sms\SmsEagleClient;
 use App\Services\Url\SlinkShortener;
 use Cachet\Events\Incidents\IncidentCreated;
 use Cachet\Events\Incidents\IncidentUpdated;
+use Cachet\Facades\CachetView;
 use Cachet\Models\Schedule;
+use Cachet\View\RenderHook as CachetRenderHook;
 use Filament\Facades\Filament;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -90,6 +92,15 @@ class AppServiceProvider extends ServiceProvider
         $this->bootRoute();
         $this->bootNotifications();
         $this->bootAiAssistant();
+        $this->bootSubscribeBanner();
+    }
+
+    private function bootSubscribeBanner(): void
+    {
+        CachetView::registerRenderHook(
+            CachetRenderHook::STATUS_PAGE_NAVIGATION_AFTER,
+            fn (): string => view('cachet.subscribe-banner')->render(),
+        );
     }
 
     private function bootAiAssistant(): void

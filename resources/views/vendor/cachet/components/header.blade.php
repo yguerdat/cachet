@@ -1,9 +1,9 @@
-<link rel="stylesheet" href="{{ asset('vendor/eseances/brand.css') }}?v=3">
+<link rel="stylesheet" href="{{ asset('vendor/eseances/brand.css') }}?v=4">
 <header class="es-header">
     <div class="es-header-inner">
         <a href="{{ url(\Cachet\Cachet::path()) }}" class="es-logo-link" aria-label="eSéances Status">
             <img src="{{ asset('vendor/eseances/logo-eseances-full.svg') }}" alt="eSéances" class="es-logo-img" />
-            <span class="es-logo-tag">Status · powered by Artionet</span>
+            <span class="es-logo-tag">Status de l'écosystème eSéances</span>
         </a>
         <a href="{{ route('subscribe.create') }}" class="es-subscribe-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>

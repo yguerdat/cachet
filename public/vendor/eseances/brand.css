@@ -62,40 +62,46 @@ body, body *:not(svg):not(path):not(circle):not(line):not(polyline):not(rect) { 
 
 /* ─────── Hero ─────── */
 .es-hero {
-    position: relative; border-radius: 24px; padding: 36px;
+    position: relative; border-radius: 18px; padding: 22px 26px;
     color: #fff; overflow: hidden;
     background:
-        radial-gradient(circle at 100% 0%, rgba(255,255,255,0.18), transparent 50%),
-        radial-gradient(circle at 0% 100%, rgba(0,0,0,0.20), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(255,255,255,0.16), transparent 50%),
+        radial-gradient(circle at 0% 100%, rgba(0,0,0,0.18), transparent 60%),
         linear-gradient(135deg, var(--es-hero-color, var(--es-brand)) 0%, var(--es-hero-color-soft, var(--es-brand-deep)) 100%);
-    box-shadow: 0 24px 60px -24px var(--es-hero-color-shadow, rgba(0, 61, 165, 0.5));
+    box-shadow: 0 12px 32px -16px var(--es-hero-color-shadow, rgba(0, 61, 165, 0.4));
 }
-.es-hero-row { display: flex; align-items: center; gap: 22px; }
+.es-hero-row { display: flex; align-items: center; gap: 16px; }
 .es-hero-icon {
-    width: 64px; height: 64px; border-radius: 18px;
+    width: 44px; height: 44px; border-radius: 12px;
     background: rgba(255,255,255,0.18); backdrop-filter: blur(10px);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; border: 1px solid rgba(255,255,255,0.3);
 }
-.es-hero-icon svg { width: 32px; height: 32px; }
-.es-hero-title { margin: 0; font-size: 32px; font-weight: 700; line-height: 1.1; }
-@media (min-width: 640px) { .es-hero-title { font-size: 38px; } }
-.es-hero-sub { margin: 8px 0 0; font-size: 15px; opacity: 0.9; }
+.es-hero-icon svg { width: 22px; height: 22px; }
+.es-hero-title { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.15; }
+@media (min-width: 640px) { .es-hero-title { font-size: 24px; } }
+.es-hero-sub { margin: 4px 0 0; font-size: 13px; opacity: 0.85; }
 
 @keyframes es-pulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.6); }
-    50% { box-shadow: 0 0 0 16px rgba(255,255,255,0); }
+    50% { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
 }
 .es-hero-icon.is-active { animation: es-pulse 2.4s infinite; }
 
+/* ─────── Welcome text ─────── */
+.es-welcome { margin-top: 28px; padding: 0 4px; }
+.es-welcome p { margin: 0 0 12px; font-size: 14px; line-height: 1.65; color: var(--es-text-soft); }
+.es-welcome p:first-child { font-size: 15px; color: var(--es-text); font-weight: 500; }
+.es-welcome p:last-child { margin-bottom: 0; }
+
 /* ─────── Stats ─────── */
-.es-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
+.es-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 16px; }
 @media (min-width: 768px) { .es-stats { grid-template-columns: repeat(4, 1fr); } }
-.es-stat-card { background: rgba(255,255,255,0.92); border-radius: 16px; padding: 18px 20px; border: 1px solid rgba(255,255,255,0.6); }
+.es-stat-card { background: rgba(255,255,255,0.92); border-radius: 12px; padding: 12px 14px; border: 1px solid rgba(255,255,255,0.6); }
 @media (prefers-color-scheme: dark) { .es-stat-card { background: rgba(20,23,29,0.85); border-color: rgba(255,255,255,0.08); } }
-.es-stat-label { margin: 0 0 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--es-text-soft); }
-.es-stat-value { margin: 0; font-size: 28px; font-weight: 700; line-height: 1; color: var(--es-text); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.es-stat-unit { font-size: 13px; font-weight: 500; color: var(--es-text-soft); margin-left: 4px; }
+.es-stat-label { margin: 0 0 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--es-text-soft); }
+.es-stat-value { margin: 0; font-size: 22px; font-weight: 700; line-height: 1; color: var(--es-text); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.es-stat-unit { font-size: 12px; font-weight: 500; color: var(--es-text-soft); margin-left: 3px; }
 
 /* ─────── Sections ─────── */
 .es-section { margin-top: 48px; }

@@ -127,6 +127,11 @@
             </div>
         </section>
 
+        <div class="es-welcome">
+            <p>Bienvenue sur la page d'état de santé des services eSéances.</p>
+            <p>Vous trouverez ci-dessous des informations sur l'état de chaque produit et service eSéances, qu'il soit sous gestion d'Artionet ou d'un partenaire tiers (hébergeur). L'état des serveurs « on-premise » ne sont pas affichés de manière publique, mais n'hésitez pas à nous écrire en cas de besoin d'informations complémentaires.</p>
+        </div>
+
         @if ($activeIncidents->isNotEmpty())
             <section class="es-section">
                 <h2 class="es-section-title es-display">

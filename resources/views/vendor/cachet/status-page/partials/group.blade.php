@@ -5,12 +5,19 @@
             @php
                 $cd = $componentDot($component);
                 $uptime = $uptimeByComponent[$component->id] ?? null;
+                $logo = $productIcon($component);
                 $sparkD = $uptime ? $sparklinePath($uptime['days']) : '';
                 $sparkF = $uptime ? $sparklineFill($uptime['days']) : '';
             @endphp
             <li class="es-comp-item">
                 <div class="es-comp-row">
-                    <span class="es-dot" style="background: {{ $cd['color'] }}; width: 10px; height: 10px;" title="{{ $cd['label'] }}"></span>
+                    <span class="es-comp-icon">
+                        @if ($logo)
+                            <img src="{{ asset($logo) }}" alt="">
+                        @else
+                            <span class="es-comp-icon-fallback" style="background: {{ $cd['color'] }};"></span>
+                        @endif
+                    </span>
                     <span class="es-comp-name">{{ $component->name }}</span>
                     <span class="es-comp-status" style="color: {{ $cd['color'] }};">{{ $cd['label'] }}</span>
                     @if ($uptime)
@@ -22,7 +29,7 @@
                     <svg class="es-spark" viewBox="0 0 200 36" preserveAspectRatio="none" aria-hidden="true">
                         <defs>
                             <linearGradient id="es-grad-{{ $component->id }}" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="{{ $cd['color'] }}" stop-opacity="0.30" />
+                                <stop offset="0%" stop-color="{{ $cd['color'] }}" stop-opacity="0.32" />
                                 <stop offset="100%" stop-color="{{ $cd['color'] }}" stop-opacity="0" />
                             </linearGradient>
                         </defs>

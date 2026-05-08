@@ -91,7 +91,7 @@ class UptimeCalculator
         $days = [];
         $now = CarbonImmutable::now();
         $totalDownSeconds = 0;
-        $totalSeconds = $end->diffInSeconds($start) ?: ($this->days * 86400);
+        $totalSeconds = max(1, $end->getTimestamp() - $start->getTimestamp());
 
         foreach (CarbonPeriod::create($start, '1 day', $end) as $day) {
             $dayKey = $day->format('Y-m-d');
@@ -114,7 +114,7 @@ class UptimeCalculator
                 if ($overlapEnd->greaterThan($now)) {
                     $overlapEnd = $now;
                 }
-                $overlapSeconds = max(0, $overlapEnd->diffInSeconds($overlapStart, false));
+                $overlapSeconds = max(0, $overlapEnd->getTimestamp() - $overlapStart->getTimestamp());
 
                 if ($overlapSeconds <= 0) {
                     continue;

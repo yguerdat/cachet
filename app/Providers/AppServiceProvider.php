@@ -105,6 +105,10 @@ class AppServiceProvider extends ServiceProvider
 
     private function bootSubscribeBanner(): void
     {
+        // Only fired on Cachet pages that still render <x-cachet::header /> —
+        // typically the incident detail page. The home (status-page.index) is
+        // overridden in resources/views/vendor/cachet and ships its own
+        // header + subscribe CTA, so this hook does not duplicate there.
         CachetView::registerRenderHook(
             CachetRenderHook::STATUS_PAGE_NAVIGATION_AFTER,
             fn (): string => view('cachet.subscribe-banner')->render(),

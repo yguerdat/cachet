@@ -43,7 +43,7 @@ Route::prefix(Cachet::path())
 
 Route::prefix(ltrim(Cachet::dashboardPath(), '/').'/ai')
     ->as('admin.ai.')
-    ->middleware(['web', Authenticate::class])
+    ->middleware(['web', Authenticate::class, 'throttle:30,1'])
     ->group(function (): void {
         Route::post('incident', [AiAssistantController::class, 'incident'])->name('incident');
         Route::post('incident-update', [AiAssistantController::class, 'incidentUpdate'])->name('incident-update');

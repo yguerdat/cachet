@@ -16,7 +16,7 @@
     },
     "require": {
         "php": "^8.2",
-        "cachethq/core": "dev-main",
+        "cachethq/core": "dev-main#5cccabf5a08b340faba58b843fa6710576ebf2a9",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^11.2",
         "laravel/nightwatch": "^1.0",

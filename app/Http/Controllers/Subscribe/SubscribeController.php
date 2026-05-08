@@ -56,9 +56,16 @@ class SubscribeController extends Controller
                 ->with('status', __('subscribe.flash.email_sent'));
         }
 
+        // Restricted phone whitelist to Switzerland + neighbouring EU. A
+        // permissive E.164 regex (`+[1-9]\d{6,14}`) accepts unallocated
+        // country codes (e.g. +999…), which SMSeagle bills for and silently
+        // drops. Configurable via SUBSCRIBE_PHONE_REGEX in .env if needed.
+        $phoneRegex = config('subscribe.phone_regex',
+            '/^\+(41|33|49|39|43|32|31|34|44|351|352|420|45|46|47|48|358|371|372|370|353)\d{6,12}$/');
+
         $validated = $request->validate([
             'email' => ['nullable', 'email:rfc,strict'],
-            'phone_number' => ['nullable', 'regex:/^\+[1-9]\d{6,14}$/'],
+            'phone_number' => ['nullable', 'regex:'.$phoneRegex],
             'components' => ['array'],
             'components.*' => ['integer', 'exists:components,id'],
             'global' => ['nullable', 'boolean'],
@@ -202,6 +209,13 @@ class SubscribeController extends Controller
         }
 
         $subscriber->verify();
+
+        // Rotate the bearer token after first email verification. The link in
+        // the verify email becomes single-use; a leak of the original mail
+        // (forwarded thread, mailbox compromise, archived backup) no longer
+        // grants permanent access to manage/unsubscribe. Future notifications
+        // ship a fresh manage URL with this rotated token.
+        $subscriber->forceFill(['verify_code' => Str::random(42)])->save();
 
         return redirect()->route('subscribe.manage', $subscriber)
             ->with('status', __('subscribe.flash.email_verified'));

@@ -48,7 +48,24 @@ class SmsEagleClient implements SmsSender
             ));
         }
 
-        return (string) ($response->json('uuid') ?? $response->json('id') ?? '');
+        // SMSeagle v2 returns either a single object or an array of per-recipient
+        // results: [{"status":"queued","id":1647,"number":"+41…"}, ...]
+        $first = $response->json(0) ?? $response->json();
+        $status = is_array($first) ? ($first['status'] ?? null) : null;
+
+        if ($status !== null && $status !== 'queued' && $status !== 'sent' && $status !== 'ok') {
+            Log::warning('SMSeagle accepted but rejected the message', [
+                'to' => $to,
+                'response' => $first,
+            ]);
+
+            throw new SmsDeliveryException(sprintf(
+                'SMSeagle rejected the message (status=%s).',
+                (string) $status,
+            ));
+        }
+
+        return is_array($first) ? (string) ($first['id'] ?? $first['uuid'] ?? '') : '';
     }
 
     private function client(): PendingRequest

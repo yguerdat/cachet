@@ -116,21 +116,26 @@ class SubscribeController extends Controller
             ->when($phone, fn ($q) => $q->orWhere('phone_number', $phone))
             ->first();
 
+        // Cachet's core Subscriber model has phone_number outside $fillable,
+        // so mass-assignment silently drops it. Use forceFill to bypass.
         if ($existing) {
-            $existing->fill([
-                'email' => $email ?? $existing->email,
-                'phone_number' => $phone ?? $existing->phone_number,
-                'global' => (bool) ($validated['global'] ?? $existing->global),
-            ])->save();
-
-            return $existing;
+            return tap($existing, function (Subscriber $s) use ($email, $phone, $validated): void {
+                $s->forceFill([
+                    'email' => $email ?? $s->email,
+                    'phone_number' => $phone ?? $s->phone_number,
+                    'global' => (bool) ($validated['global'] ?? $s->global),
+                ])->save();
+            });
         }
 
-        return Subscriber::create([
+        $subscriber = new Subscriber;
+        $subscriber->forceFill([
             'email' => $email,
             'phone_number' => $phone,
             'verify_code' => Str::random(42),
             'global' => (bool) ($validated['global'] ?? false),
-        ]);
+        ])->save();
+
+        return $subscriber;
     }
 }

@@ -11,8 +11,22 @@
 
 namespace App\Providers;
 
+use App\Contracts\IncidentWriter;
+use App\Contracts\SmsSender;
+use App\Contracts\UrlShortener;
+use App\Listeners\NotifySubscribersOfIncident;
+use App\Observers\ScheduleObserver;
+use App\Services\Ai\ClaudeWriter;
+use App\Services\Sms\SmsEagleClient;
+use App\Services\Url\SlinkShortener;
+use Cachet\Events\Incidents\IncidentCreated;
+use Cachet\Events\Incidents\IncidentUpdated;
+use Cachet\Models\Schedule;
+use Filament\Facades\Filament;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,7 +46,40 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(SmsSender::class, function ($app): SmsSender {
+            $config = $app['config']->get('smseagle');
+
+            return new SmsEagleClient(
+                baseUrl: rtrim((string) $config['base_url'], '/'),
+                token: $config['token'] ?? null,
+                defaultModem: $config['modem'] ?? null,
+                timeout: (int) ($config['timeout'] ?? 10),
+            );
+        });
+
+        $this->app->singleton(UrlShortener::class, function ($app): UrlShortener {
+            $config = $app['config']->get('slink');
+
+            return new SlinkShortener(
+                baseUrl: rtrim((string) $config['base_url'], '/'),
+                apiKey: $config['api_key'] ?? null,
+                slugPrefix: trim((string) ($config['slug_prefix'] ?? 'status'), '/'),
+                timeout: (int) ($config['timeout'] ?? 5),
+            );
+        });
+
+        $this->app->singleton(IncidentWriter::class, function ($app): IncidentWriter {
+            $config = $app['config']->get('anthropic');
+
+            return new ClaudeWriter(
+                apiKey: (string) ($config['api_key'] ?? ''),
+                model: (string) ($config['model'] ?? 'claude-sonnet-4-6'),
+                baseUrl: rtrim((string) ($config['base_url'] ?? 'https://api.anthropic.com'), '/'),
+                version: (string) ($config['version'] ?? '2023-06-01'),
+                timeout: (int) ($config['timeout'] ?? 30),
+                maxTokens: (int) ($config['max_tokens'] ?? 1024),
+            );
+        });
     }
 
     /**
@@ -40,9 +87,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
-
         $this->bootRoute();
+        $this->bootNotifications();
+        $this->bootAiAssistant();
+    }
+
+    private function bootAiAssistant(): void
+    {
+        Filament::registerRenderHook(
+            PanelsRenderHook::BODY_END,
+            fn (): string => view('filament.ai-assistant')->render(),
+        );
+    }
+
+    private function bootNotifications(): void
+    {
+        Event::listen(IncidentCreated::class, [NotifySubscribersOfIncident::class, 'handle']);
+        Event::listen(IncidentUpdated::class, [NotifySubscribersOfIncident::class, 'handle']);
+
+        Schedule::observe(ScheduleObserver::class);
     }
 
     public function bootRoute(): void

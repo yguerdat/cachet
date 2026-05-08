@@ -178,7 +178,7 @@
                                         @endif
                                     </div>
                                     @if (! empty($update->message))
-                                        <div class="es-timeline-body">{!! \Illuminate\Support\Str::of($update->message)->markdown() !!}</div>
+                                        <div class="es-timeline-body">{!! \App\Support\SafeMarkdown::convert($update->message) !!}</div>
                                     @endif
                                 </li>
                             @endforeach
@@ -189,7 +189,7 @@
                                         <span class="es-timeline-status">{{ $incident->status?->getLabel() ?? '—' }}</span>
                                         <span class="es-timeline-time" title="{{ $incident->created_at?->isoFormat('LLLL') }}">{{ $incident->created_at?->diffForHumans() }}</span>
                                     </div>
-                                    <div class="es-timeline-body">{!! \Illuminate\Support\Str::of($incident->message)->markdown() !!}</div>
+                                    <div class="es-timeline-body">{!! \App\Support\SafeMarkdown::convert($incident->message) !!}</div>
                                 </li>
                             @endif
                         </ol>
@@ -219,7 +219,7 @@
                             @endif
                         </div>
                         @if (! empty($schedule->message))
-                            <div class="es-maint-body">{!! \Illuminate\Support\Str::of($schedule->message)->markdown() !!}</div>
+                            <div class="es-maint-body">{!! \App\Support\SafeMarkdown::convert($schedule->message) !!}</div>
                         @endif
                     </article>
                 @endforeach

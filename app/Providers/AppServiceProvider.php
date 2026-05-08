@@ -104,7 +104,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Filament::registerRenderHook(
             PanelsRenderHook::BODY_END,
-            fn (): string => view('filament.ai-assistant')->render(),
+            fn (): string => auth()->check() && auth()->user()?->isAdmin()
+                ? view('filament.ai-assistant')->render()
+                : '',
         );
     }
 

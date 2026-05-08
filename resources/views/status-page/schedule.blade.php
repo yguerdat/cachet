@@ -85,7 +85,7 @@
             <section class="es-section" style="margin-top: 32px;">
                 <h2 class="es-section-title es-display">Description</h2>
                 <article class="es-card">
-                    <div class="es-timeline-body">{!! \Illuminate\Support\Str::of($schedule->message)->markdown() !!}</div>
+                    <div class="es-timeline-body">{!! \App\Support\SafeMarkdown::convert($schedule->message) !!}</div>
                 </article>
             </section>
         @endif
@@ -105,7 +105,7 @@
                                     <span class="es-timeline-time" title="{{ $update->created_at?->isoFormat('LLLL') }}">{{ $update->created_at?->isoFormat('LLLL') }}</span>
                                 </div>
                                 @if (! empty($update->message))
-                                    <div class="es-timeline-body">{!! \Illuminate\Support\Str::of($update->message)->markdown() !!}</div>
+                                    <div class="es-timeline-body">{!! \App\Support\SafeMarkdown::convert($update->message) !!}</div>
                                 @endif
                             </li>
                         @endforeach

@@ -10,7 +10,7 @@
 @endif
 
 @if (!empty($displayMessage))
-{!! \Illuminate\Support\Str::of($displayMessage)->markdown() !!}
+{!! \App\Support\SafeMarkdown::convert($displayMessage) !!}
 @endif
 
 <x-mail::button :url="$incidentUrl">

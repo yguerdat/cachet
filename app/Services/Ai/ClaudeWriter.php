@@ -157,7 +157,7 @@ class ClaudeWriter implements IncidentWriter
         if ($response->failed()) {
             Log::warning('Anthropic API call failed', [
                 'status' => $response->status(),
-                'body' => $response->body(),
+                'body' => $this->redact($response->body()),
             ]);
 
             throw new AiAssistantException('Le service IA est momentanément indisponible.');
@@ -172,9 +172,26 @@ class ClaudeWriter implements IncidentWriter
             }
         }
 
-        Log::warning('Anthropic returned no tool_use block', ['payload' => $payload]);
+        Log::warning('Anthropic returned no tool_use block', [
+            'stop_reason' => $payload['stop_reason'] ?? null,
+            'model' => $payload['model'] ?? null,
+        ]);
 
         throw new AiAssistantException('Réponse inattendue du service IA.');
+    }
+
+    private function redact(string $body): string
+    {
+        // Redact known secret-shaped substrings before logging upstream errors.
+        $patterns = [
+            '/sk-ant-[A-Za-z0-9_-]+/' => '[redacted-anthropic-key]',
+            '/Bearer\s+[A-Za-z0-9._-]+/i' => 'Bearer [redacted]',
+        ];
+
+        return \Illuminate\Support\Str::limit(
+            preg_replace(array_keys($patterns), array_values($patterns), $body) ?? '',
+            500,
+        );
     }
 
     private function client(): PendingRequest

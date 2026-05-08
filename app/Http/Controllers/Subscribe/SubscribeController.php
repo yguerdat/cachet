@@ -79,18 +79,41 @@ class SubscribeController extends Controller
             $subscriber->components()->detach();
         }
 
-        // ── Anti-bot layer #3 — verification cooldown.
-        // Only resend the email/SMS verification if at least 60 seconds have
-        // elapsed since the last send to this subscriber. Prevents inbox-bombing
-        // by repeated form submissions.
-        if (! empty($validated['email']) && $subscriber->verified_at === null && $this->canResendEmail($subscriber)) {
-            Mail::to($subscriber->email)->queue(new SubscriberVerifyEmail($subscriber));
-            $this->markEmailSent($subscriber);
+        // ── Anti-bot layer #3 — verification cooldowns.
+        // Per-subscriber cooldown (60s) prevents accidental double-clicks.
+        // Per-channel cooldown keyed by SHA1(value) (15 min) plus a daily
+        // global budget protect against IP-rotating attackers who would
+        // otherwise SMS-bomb a victim or burn our mail / SMS quota.
+        if (! empty($validated['email']) && $subscriber->verified_at === null) {
+            if ($this->canResendEmail($subscriber)
+                && $this->canSendToEmail($validated['email'])
+                && $this->underDailyEmailBudget()) {
+                Mail::to($subscriber->email)->queue(new SubscriberVerifyEmail($subscriber));
+                $this->markEmailSent($subscriber);
+                $this->markEmailAddressSent($validated['email']);
+                $this->bumpDailyEmailCounter();
+            } else {
+                Log::info('Subscribe email send skipped', [
+                    'subscriber_id' => $subscriber->getKey(),
+                    'reason' => 'cooldown_or_budget',
+                ]);
+            }
         }
 
-        if (! empty($validated['phone_number']) && $subscriber->phone_verified_at === null && $this->canResendSms($subscriber)) {
-            $phoneVerifier->sendCode($subscriber);
-            $this->markSmsSent($subscriber);
+        if (! empty($validated['phone_number']) && $subscriber->phone_verified_at === null) {
+            if ($this->canResendSms($subscriber)
+                && $this->canSendToPhone($validated['phone_number'])
+                && $this->underDailySmsBudget()) {
+                $phoneVerifier->sendCode($subscriber);
+                $this->markSmsSent($subscriber);
+                $this->markPhoneSent($validated['phone_number']);
+                $this->bumpDailySmsCounter();
+            } else {
+                Log::info('Subscribe SMS send skipped', [
+                    'subscriber_id' => $subscriber->getKey(),
+                    'reason' => 'cooldown_or_budget',
+                ]);
+            }
         }
 
         if (! empty($validated['phone_number'])) {
@@ -101,6 +124,11 @@ class SubscribeController extends Controller
             ->with('status', __('subscribe.flash.email_sent'));
     }
 
+    private const DAILY_SMS_BUDGET = 200;
+    private const DAILY_EMAIL_BUDGET = 1000;
+    private const PER_VALUE_COOLDOWN_SECONDS = 900;     // 15 minutes
+    private const PER_SUBSCRIBER_COOLDOWN_SECONDS = 60; // 1 minute
+
     private function canResendEmail(Subscriber $s): bool
     {
         return ! Cache::has('subscriber_email_cooldown:'.$s->getKey());
@@ -108,7 +136,7 @@ class SubscribeController extends Controller
 
     private function markEmailSent(Subscriber $s): void
     {
-        Cache::put('subscriber_email_cooldown:'.$s->getKey(), 1, 60);
+        Cache::put('subscriber_email_cooldown:'.$s->getKey(), 1, self::PER_SUBSCRIBER_COOLDOWN_SECONDS);
     }
 
     private function canResendSms(Subscriber $s): bool
@@ -118,7 +146,53 @@ class SubscribeController extends Controller
 
     private function markSmsSent(Subscriber $s): void
     {
-        Cache::put('subscriber_sms_cooldown:'.$s->getKey(), 1, 60);
+        Cache::put('subscriber_sms_cooldown:'.$s->getKey(), 1, self::PER_SUBSCRIBER_COOLDOWN_SECONDS);
+    }
+
+    private function canSendToEmail(string $email): bool
+    {
+        return ! Cache::has('email_cooldown:'.sha1(strtolower($email)));
+    }
+
+    private function markEmailAddressSent(string $email): void
+    {
+        Cache::put('email_cooldown:'.sha1(strtolower($email)), 1, self::PER_VALUE_COOLDOWN_SECONDS);
+    }
+
+    private function canSendToPhone(string $phone): bool
+    {
+        return ! Cache::has('phone_cooldown:'.sha1($phone));
+    }
+
+    private function markPhoneSent(string $phone): void
+    {
+        Cache::put('phone_cooldown:'.sha1($phone), 1, self::PER_VALUE_COOLDOWN_SECONDS);
+    }
+
+    private function underDailyEmailBudget(): bool
+    {
+        return (int) Cache::get('daily_email_count:'.now()->format('Y-m-d'), 0) < self::DAILY_EMAIL_BUDGET;
+    }
+
+    private function bumpDailyEmailCounter(): void
+    {
+        Cache::increment('daily_email_count:'.now()->format('Y-m-d'));
+        Cache::put('daily_email_count:'.now()->format('Y-m-d'),
+            (int) Cache::get('daily_email_count:'.now()->format('Y-m-d'), 1),
+            now()->endOfDay()->diffInSeconds(now()) + 60);
+    }
+
+    private function underDailySmsBudget(): bool
+    {
+        return (int) Cache::get('daily_sms_count:'.now()->format('Y-m-d'), 0) < self::DAILY_SMS_BUDGET;
+    }
+
+    private function bumpDailySmsCounter(): void
+    {
+        Cache::increment('daily_sms_count:'.now()->format('Y-m-d'));
+        Cache::put('daily_sms_count:'.now()->format('Y-m-d'),
+            (int) Cache::get('daily_sms_count:'.now()->format('Y-m-d'), 1),
+            now()->endOfDay()->diffInSeconds(now()) + 60);
     }
 
     public function verifyEmail(Subscriber $subscriber, string $code): RedirectResponse

@@ -10,7 +10,19 @@ use Illuminate\Http\Request;
 
 class AiAssistantController extends Controller
 {
-    public function __construct(private readonly IncidentWriter $writer) {}
+    public function __construct(private readonly IncidentWriter $writer)
+    {
+        // The route group is gated on Filament Authenticate (= logged-in user),
+        // but we additionally require admin to keep AI spend and stored-content
+        // authoring restricted to operators.
+        $this->middleware(function ($request, $next) {
+            if (! $request->user()?->isAdmin()) {
+                abort(403);
+            }
+
+            return $next($request);
+        });
+    }
 
     public function incident(Request $request): JsonResponse
     {

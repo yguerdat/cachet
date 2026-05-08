@@ -10,7 +10,7 @@
 @endif
 
 @if (!empty($schedule->message))
-{!! \Illuminate\Support\Str::of($schedule->message)->markdown() !!}
+{!! \App\Support\SafeMarkdown::convert($schedule->message) !!}
 @endif
 
 <x-mail::button :url="$scheduleUrl">

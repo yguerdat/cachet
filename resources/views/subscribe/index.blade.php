@@ -21,6 +21,13 @@
             <form method="POST" action="{{ route('subscribe.store') }}">
                 @csrf
 
+                {{-- Anti-bot honeypot: real users never see/fill this. --}}
+                <div aria-hidden="true" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
+                    <label>Site web<input type="text" name="website" tabindex="-1" autocomplete="off" value=""></label>
+                </div>
+                {{-- Anti-bot min-time: bots submit instantly. --}}
+                <input type="hidden" name="rendered_at" value="{{ now()->getTimestamp() }}">
+
                 <div class="es-field">
                     <label for="email" class="es-label">{{ __('subscribe.field.email') }}</label>
                     <input type="email" name="email" id="email" value="{{ old('email') }}" class="es-input" placeholder="vous@exemple.com">

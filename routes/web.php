@@ -13,7 +13,9 @@ Route::prefix(Cachet::path())
     ->middleware('web')
     ->group(function (): void {
         Route::get('subscribe', [SubscribeController::class, 'create'])->name('create');
-        Route::post('subscribe', [SubscribeController::class, 'store'])->name('store');
+        Route::post('subscribe', [SubscribeController::class, 'store'])
+            ->middleware('throttle:3,1')
+            ->name('store');
 
         Route::get('subscribe/verify-email/{subscriber}/{code}', [SubscribeController::class, 'verifyEmail'])
             ->where('code', '[A-Za-z0-9]+')

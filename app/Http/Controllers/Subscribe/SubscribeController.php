@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\SubscriberVerifyEmail;
 use App\Services\Subscribers\PhoneVerifier;
 use Cachet\Models\Component;
+use Cachet\Models\ComponentGroup;
 use Cachet\Models\Subscriber;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -18,7 +19,15 @@ class SubscribeController extends Controller
     public function create(): View
     {
         return view('subscribe.index', [
-            'components' => Component::query()->enabled()->orderBy('order')->get(),
+            'componentGroups' => ComponentGroup::query()
+                ->with(['components' => fn ($q) => $q->enabled()->orderBy('order')])
+                ->orderBy('order')
+                ->get(),
+            'ungroupedComponents' => Component::query()
+                ->enabled()
+                ->whereNull('component_group_id')
+                ->orderBy('order')
+                ->get(),
         ]);
     }
 

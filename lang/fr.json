@@ -9,6 +9,7 @@
     "subscribe.field.scope": "Périmètre",
     "subscribe.field.global": "Tous les composants",
     "subscribe.field.choose_components": "Choisir les composants spécifiques…",
+    "subscribe.field.other_components": "Autres composants",
     "subscribe.action.submit": "S'abonner",
     "subscribe.flash.email_sent": "Si vous avez fourni un e-mail, un lien de confirmation vient d'y être envoyé.",
     "subscribe.flash.email_verified": "Votre adresse e-mail est confirmée.",

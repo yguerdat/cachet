@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Subscribe;
 
 use App\Http\Controllers\Controller;
 use Cachet\Models\Component;
+use Cachet\Models\ComponentGroup;
 use Cachet\Models\Subscriber;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -15,7 +16,15 @@ class ManageController extends Controller
     {
         return view('subscribe.manage', [
             'subscriber' => $subscriber,
-            'components' => Component::query()->enabled()->orderBy('order')->get(),
+            'componentGroups' => ComponentGroup::query()
+                ->with(['components' => fn ($q) => $q->enabled()->orderBy('order')])
+                ->orderBy('order')
+                ->get(),
+            'ungroupedComponents' => Component::query()
+                ->enabled()
+                ->whereNull('component_group_id')
+                ->orderBy('order')
+                ->get(),
             'subscribedComponentIds' => $subscriber->components()->pluck('components.id')->all(),
         ]);
     }

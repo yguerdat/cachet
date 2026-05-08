@@ -206,10 +206,10 @@
                 </h2>
                 @foreach ($schedules as $schedule)
                     <article class="es-maint-card">
-                        <h3 class="es-maint-title">
+                        <a href="{{ route('status-page.schedule', $schedule) }}" class="es-maint-title">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                            {{ $schedule->name }}
-                        </h3>
+                            <span>{{ $schedule->name }}</span>
+                        </a>
                         <div class="es-maint-meta">
                             @if ($schedule->scheduled_at)
                                 <div><strong>Début :</strong> {{ $schedule->scheduled_at->isoFormat('LLLL') }}</div>

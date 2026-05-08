@@ -1,31 +1,29 @@
 <x-cachet::cachet :title="__('subscribe.verify_phone.title')">
     <x-cachet::header />
 
-    <div class="container mx-auto max-w-md px-4 py-10 sm:px-6 lg:px-8">
-        <h1 class="text-2xl font-semibold mb-2">{{ __('subscribe.verify_phone.title') }}</h1>
-        <p class="text-zinc-600 dark:text-zinc-400 mb-6">
-            {{ __('subscribe.verify_phone.intro', ['phone' => $subscriber->phone_number]) }}
-        </p>
+    <main class="es-shell es-shell-narrow" style="max-width: 480px;">
+        <h1 class="es-page-title">{{ __('subscribe.verify_phone.title') }}</h1>
+        <p class="es-page-intro">{{ __('subscribe.verify_phone.intro', ['phone' => $subscriber->phone_number]) }}</p>
 
         @if ($errors->any())
-            <div class="mb-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+            <div class="es-flash es-flash-error">
                 @foreach ($errors->all() as $error)
-                    {{ $error }}
+                    <div>{{ $error }}</div>
                 @endforeach
             </div>
         @endif
 
-        <form method="POST" action="{{ route('subscribe.verify-phone.confirm', $subscriber) }}" class="space-y-4">
-            @csrf
-            <div>
-                <label for="code" class="block text-sm font-medium mb-1">{{ __('subscribe.verify_phone.code') }}</label>
-                <input type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" name="code" id="code" required
-                    class="block w-full rounded-md border-zinc-300 text-center text-2xl tracking-widest font-mono focus:border-zinc-500 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900">
-            </div>
-            <button type="submit"
-                class="w-full inline-flex justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm ring-1 ring-accent/30 transition hover:opacity-90">
-                {{ __('subscribe.verify_phone.submit') }}
-            </button>
-        </form>
-    </div>
+        <div class="es-form-card">
+            <form method="POST" action="{{ route('subscribe.verify-phone.confirm', $subscriber) }}">
+                @csrf
+                <div class="es-field">
+                    <label for="code" class="es-label">{{ __('subscribe.verify_phone.code') }}</label>
+                    <input type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" name="code" id="code" required class="es-input es-input-code" autofocus>
+                </div>
+                <button type="submit" class="es-btn-primary" style="width: 100%;">{{ __('subscribe.verify_phone.submit') }}</button>
+            </form>
+        </div>
+    </main>
+
+    <x-cachet::footer />
 </x-cachet::cachet>

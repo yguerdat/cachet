@@ -63,9 +63,7 @@
         $stepX = $count > 1 ? $width / ($count - 1) : 0;
         $points = [];
         foreach ($values as $i => $v) {
-            $x = round($i * $stepX, 2);
-            $y = round($height - ($v / 100) * ($height - 4) - 2, 2);
-            $points[] = $x.','.$y;
+            $points[] = round($i * $stepX, 2).','.round($height - ($v / 100) * ($height - 4) - 2, 2);
         }
         return 'M '.implode(' L ', $points);
     };
@@ -81,9 +79,7 @@
         $stepX = $count > 1 ? $width / ($count - 1) : 0;
         $points = ['0,'.$height];
         foreach ($values as $i => $v) {
-            $x = round($i * $stepX, 2);
-            $y = round($height - ($v / 100) * ($height - 4) - 2, 2);
-            $points[] = $x.','.$y;
+            $points[] = round($i * $stepX, 2).','.round($height - ($v / 100) * ($height - 4) - 2, 2);
         }
         $points[] = $width.','.$height;
         return 'M '.implode(' L ', $points).' Z';
@@ -91,301 +87,11 @@
 @endphp
 
 <x-cachet::cachet>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap');
-
-        /* ─────── Brand vars ─────── */
-        :root {
-            --es-brand: #003da5;
-            --es-brand-deep: #002a73;
-            --es-brand-soft: rgba(0, 61, 165, 0.06);
-            --es-brand-mid: rgba(0, 61, 165, 0.15);
-            --es-bg: #f7f8fc;
-            --es-card: #ffffff;
-            --es-text: #1f2937;
-            --es-text-soft: #6b7280;
-            --es-text-mute: #9ca3af;
-            --es-border: #e5e7eb;
-            --es-radius: 18px;
-        }
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --es-bg: #0b0d12;
-                --es-card: #14171d;
-                --es-text: #f3f4f6;
-                --es-text-soft: #9ca3af;
-                --es-text-mute: #6b7280;
-                --es-border: #1f242b;
-            }
-        }
-
-        body { background: var(--es-bg) !important; }
-        .es-shell, .es-shell *, .es-header, .es-header * { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
-        .es-display { font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-feature-settings: "ss01", "ss02"; letter-spacing: -0.02em; }
-
-        /* ─────── Header ─────── */
-        .es-header {
-            background: var(--es-card);
-            border-bottom: 1px solid var(--es-border);
-        }
-        .es-header-inner {
-            max-width: 1100px; margin: 0 auto;
-            display: flex; align-items: center; justify-content: space-between;
-            gap: 16px; padding: 18px 24px;
-        }
-        .es-logo-link { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .es-logo-mark {
-            width: 44px; height: 44px; border-radius: 10px;
-            background: var(--es-brand); color: white;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 22px; flex-shrink: 0;
-            box-shadow: 0 4px 14px -4px rgba(0, 61, 165, 0.45);
-        }
-        .es-logo-text { line-height: 1.1; }
-        .es-logo-name {
-            font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700;
-            color: var(--es-text); letter-spacing: -0.02em;
-        }
-        .es-logo-tag { font-size: 11px; color: var(--es-text-soft); font-weight: 500; letter-spacing: 0.02em; }
-
-        .es-subscribe-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 10px 18px; border-radius: 999px;
-            background: linear-gradient(135deg, var(--es-brand), var(--es-brand-deep));
-            color: #ffffff; text-decoration: none;
-            font-size: 14px; font-weight: 600;
-            box-shadow: 0 4px 14px -4px rgba(0, 61, 165, 0.55), inset 0 1px 0 rgba(255,255,255,0.2);
-            transition: transform 120ms ease-out, box-shadow 120ms ease-out;
-        }
-        .es-subscribe-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px -4px rgba(0, 61, 165, 0.6); }
-        .es-subscribe-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
-
-        /* ─────── Shell ─────── */
-        .es-shell { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; color: var(--es-text); }
-        @media (max-width: 640px) { .es-shell { padding: 24px 16px 64px; } }
-
-        /* ─────── Hero ─────── */
-        .es-hero {
-            position: relative;
-            border-radius: 24px;
-            padding: 36px;
-            color: #fff;
-            overflow: hidden;
-            background:
-                radial-gradient(circle at 100% 0%, rgba(255,255,255,0.18), transparent 50%),
-                radial-gradient(circle at 0% 100%, rgba(0,0,0,0.20), transparent 60%),
-                linear-gradient(135deg, {{ $overall['color'] }} 0%, {{ $overall['color'] }}dd 100%);
-            box-shadow: 0 24px 60px -24px {{ $overall['color'] }}88;
-        }
-        .es-hero-row { display: flex; align-items: center; gap: 22px; }
-        .es-hero-icon {
-            width: 64px; height: 64px; border-radius: 18px;
-            background: rgba(255,255,255,0.18);
-            backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; border: 1px solid rgba(255,255,255,0.3);
-        }
-        .es-hero-icon svg { width: 32px; height: 32px; }
-        .es-hero-title { margin: 0; font-size: 32px; font-weight: 700; line-height: 1.1; }
-        @media (min-width: 640px) { .es-hero-title { font-size: 38px; } }
-        .es-hero-sub { margin: 8px 0 0; font-size: 15px; opacity: 0.9; }
-
-        @keyframes es-pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.6); }
-            50% { box-shadow: 0 0 0 16px rgba(255,255,255,0); }
-        }
-        .es-hero-icon.is-active { animation: es-pulse 2.4s infinite; }
-
-        /* ─────── Stats ─────── */
-        .es-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
-        @media (min-width: 768px) { .es-stats { grid-template-columns: repeat(4, 1fr); } }
-        .es-stat-card {
-            background: rgba(255,255,255,0.92);
-            border-radius: 16px; padding: 18px 20px;
-            border: 1px solid rgba(255,255,255,0.6);
-        }
-        @media (prefers-color-scheme: dark) { .es-stat-card { background: rgba(20,23,29,0.85); border-color: rgba(255,255,255,0.08); } }
-        .es-stat-label { margin: 0 0 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--es-text-soft); }
-        .es-stat-value { margin: 0; font-size: 28px; font-weight: 700; line-height: 1; color: var(--es-text); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-        .es-stat-unit { font-size: 13px; font-weight: 500; color: var(--es-text-soft); margin-left: 4px; }
-
-        /* ─────── Sections ─────── */
-        .es-section { margin-top: 48px; }
-        .es-section-title {
-            display: flex; align-items: baseline; justify-content: space-between;
-            margin: 0 0 18px;
-            font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700;
-            color: var(--es-text); letter-spacing: -0.01em;
-        }
-        .es-section-meta {
-            font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
-            color: var(--es-text-mute); text-transform: uppercase; letter-spacing: 0.06em;
-        }
-
-        /* ─────── Incidents ─────── */
-        .es-incident-card {
-            position: relative;
-            background: var(--es-card);
-            border-radius: var(--es-radius);
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 12px 32px -16px rgba(0,0,0,0.10);
-            border: 1px solid var(--es-border);
-            margin-bottom: 16px;
-            overflow: hidden;
-        }
-        .es-incident-card::before {
-            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-            background: var(--es-card-color, var(--es-brand));
-        }
-        .es-incident-header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-        .es-incident-title { margin: 0; font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: var(--es-text); text-decoration: none; letter-spacing: -0.01em; }
-        .es-incident-title:hover { text-decoration: underline; }
-
-        .es-pill {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 5px 12px; border-radius: 999px;
-            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-            color: #fff;
-        }
-
-        .es-incident-impact { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-        .es-impact-tag {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: var(--es-brand-soft); color: var(--es-brand);
-            padding: 6px 12px; border-radius: 999px;
-            font-size: 13px; font-weight: 500;
-            border: 1px solid var(--es-brand-mid);
-        }
-        .es-impact-tag img { width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0; }
-        .es-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
-
-        .es-timeline {
-            margin: 22px 0 0; padding: 0 0 0 26px; list-style: none;
-            border-left: 2px solid var(--es-border);
-        }
-        .es-timeline-item { position: relative; padding-bottom: 18px; }
-        .es-timeline-item:last-child { padding-bottom: 0; }
-        .es-timeline-dot {
-            position: absolute; left: -34px; top: 4px;
-            width: 16px; height: 16px; border-radius: 50%;
-            border: 4px solid var(--es-card);
-            background: var(--es-dot-color, var(--es-brand));
-        }
-        .es-timeline-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
-        .es-timeline-status { font-size: 14px; font-weight: 600; color: var(--es-text); }
-        .es-timeline-time { font-size: 12px; color: var(--es-text-soft); font-variant-numeric: tabular-nums; }
-        .es-timeline-tag {
-            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-            background: var(--es-brand-soft); color: var(--es-brand);
-            padding: 3px 8px; border-radius: 999px;
-        }
-        .es-timeline-body { margin: 6px 0 0; font-size: 14px; line-height: 1.6; color: var(--es-text-soft); }
-        .es-timeline-body p { margin: 0 0 8px; }
-        .es-timeline-body p:last-child { margin: 0; }
-
-        /* ─────── Maintenance ─────── */
-        .es-maint-card {
-            background: linear-gradient(135deg, rgba(0,61,165,0.08), rgba(0,61,165,0.02));
-            border: 1px solid var(--es-brand-mid);
-            border-radius: var(--es-radius);
-            padding: 22px 24px;
-            margin-bottom: 12px;
-        }
-        .es-maint-title { display: flex; align-items: center; gap: 10px; margin: 0; font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; color: var(--es-brand); }
-        .es-maint-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; font-size: 13px; color: var(--es-text); }
-        .es-maint-body { margin-top: 14px; font-size: 14px; line-height: 1.6; color: var(--es-text-soft); }
-
-        /* ─────── Components ─────── */
-        .es-comp-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-        .es-comp-group {
-            background: var(--es-card); border: 1px solid var(--es-border); border-radius: var(--es-radius);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            overflow: hidden;
-        }
-        .es-comp-group-head {
-            padding: 14px 20px;
-            font-family: 'Fraunces', serif; font-size: 15px; font-weight: 700;
-            color: var(--es-text);
-            border-bottom: 1px solid var(--es-border);
-            background: var(--es-brand-soft);
-        }
-        .es-comp-list { list-style: none; padding: 0; margin: 0; }
-        .es-comp-item { padding: 18px 20px; border-bottom: 1px solid var(--es-border); }
-        .es-comp-item:last-child { border-bottom: 0; }
-        .es-comp-row { display: flex; align-items: center; gap: 12px; }
-        .es-comp-icon {
-            width: 36px; height: 36px; border-radius: 10px;
-            background: var(--es-brand-soft); flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-            border: 1px solid var(--es-brand-mid);
-        }
-        .es-comp-icon img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
-        .es-comp-icon-fallback {
-            width: 12px; height: 12px; border-radius: 50%;
-            background: var(--es-brand);
-        }
-        .es-comp-name { font-size: 15px; font-weight: 600; color: var(--es-text); flex: 1; }
-        .es-comp-status {
-            font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
-        }
-        .es-comp-uptime {
-            font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
-            color: var(--es-text);
-        }
-        .es-comp-uptime-suffix { font-size: 11px; font-weight: 500; color: var(--es-text-mute); margin-left: 2px; }
-
-        .es-spark { width: 100%; height: 38px; margin-top: 12px; display: block; }
-        .es-bars90 { display: flex; gap: 1px; margin-top: 8px; height: 30px; border-radius: 4px; overflow: hidden; }
-        .es-bars90 span { flex: 1; min-width: 1px; transition: transform 100ms ease-out; }
-        .es-bars90 span:hover { transform: scaleY(1.15); }
-        .es-bars90-axis {
-            display: flex; justify-content: space-between;
-            margin-top: 6px;
-            font-size: 10px; color: var(--es-text-mute); font-weight: 500;
-        }
-
-        /* ─────── History ─────── */
-        .es-history-day { margin-bottom: 18px; }
-        .es-history-day-label {
-            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-            color: var(--es-text-mute); margin-bottom: 8px;
-        }
-        .es-history-list { list-style: none; padding: 0; margin: 0; }
-        .es-history-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 14px 18px; margin-bottom: 6px;
-            background: var(--es-card); border: 1px solid var(--es-border); border-radius: 12px;
-            font-size: 14px; text-decoration: none; color: var(--es-text);
-            transition: background 100ms;
-        }
-        .es-history-item:hover { background: var(--es-brand-soft); }
-        .es-history-item-resolved {
-            font-size: 11px; color: #10b981; font-weight: 700; margin-left: auto;
-            text-transform: uppercase; letter-spacing: 0.06em;
-        }
-    </style>
-
-    {{-- ─────── Custom header (replaces <x-cachet::header />) ─────── --}}
-    <header class="es-header">
-        <div class="es-header-inner">
-            <a href="{{ url(\Cachet\Cachet::path()) }}" class="es-logo-link">
-                <span class="es-logo-mark es-display">eS</span>
-                <span class="es-logo-text">
-                    <span class="es-logo-name">eSéances</span><br>
-                    <span class="es-logo-tag">Status · powered by Artionet</span>
-                </span>
-            </a>
-            <a href="{{ route('subscribe.create') }}" class="es-subscribe-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                S'abonner aux notifications
-            </a>
-        </div>
-    </header>
+    <x-cachet::header />
 
     <main class="es-shell">
 
-        {{-- ─────── Hero ─────── --}}
-        <section class="es-hero">
+        <section class="es-hero" style="--es-hero-color: {{ $overall['color'] }}; --es-hero-color-soft: {{ $overall['color'] }}dd; --es-hero-color-shadow: {{ $overall['color'] }}88;">
             <div class="es-hero-row">
                 <div class="es-hero-icon @if($overall['status'] !== 'ok') is-active @endif">
                     @if ($heroIcon === 'check')
@@ -421,21 +127,19 @@
             </div>
         </section>
 
-        {{-- ─────── Active incidents ─────── --}}
         @if ($activeIncidents->isNotEmpty())
             <section class="es-section">
                 <h2 class="es-section-title es-display">
                     Incidents en cours
                     <span class="es-section-meta">{{ $activeIncidents->count() }} {{ $activeIncidents->count() > 1 ? 'incidents' : 'incident' }}</span>
                 </h2>
-
                 @foreach ($activeIncidents as $incident)
                     @php
                         $sortedUpdates = $incident->updates->sortByDesc('created_at')->values();
                         $latestStatus = $sortedUpdates->first()?->status ?? $incident->status;
                         $cardColor = $statusColor($latestStatus);
                     @endphp
-                    <article class="es-incident-card" style="--es-card-color: {{ $cardColor }};">
+                    <article class="es-card es-incident-card" style="--es-card-color: {{ $cardColor }};">
                         <div class="es-incident-header">
                             <span class="es-pill" style="background: {{ $cardColor }};">{{ $latestStatus?->getLabel() ?? '—' }}</span>
                             <a class="es-incident-title es-display" href="{{ route('cachet.status-page.incident', $incident) }}">{{ $incident->name }}</a>
@@ -489,7 +193,6 @@
             </section>
         @endif
 
-        {{-- ─────── Maintenance ─────── --}}
         @if ($schedules->isNotEmpty())
             <section class="es-section">
                 <h2 class="es-section-title es-display">
@@ -518,13 +221,11 @@
             </section>
         @endif
 
-        {{-- ─────── Components ─────── --}}
         <section class="es-section">
             <h2 class="es-section-title es-display">
                 Composants
                 <span class="es-section-meta">90 derniers jours</span>
             </h2>
-
             <div class="es-comp-grid">
                 @foreach ($componentGroups as $group)
                     @if ($group->components->isNotEmpty())
@@ -551,7 +252,6 @@
             </div>
         </section>
 
-        {{-- ─────── History ─────── --}}
         @if ($pastIncidents->isNotEmpty())
             <section class="es-section">
                 <h2 class="es-section-title es-display">Historique <span class="es-section-meta">30 derniers jours</span></h2>
@@ -573,7 +273,6 @@
                 @endforeach
             </section>
         @endif
-
     </main>
 
     <x-cachet::footer />

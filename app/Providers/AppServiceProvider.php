@@ -22,9 +22,7 @@ use App\Services\Url\SlinkShortener;
 use App\View\Composers\StatusPageComposer;
 use Cachet\Events\Incidents\IncidentCreated;
 use Cachet\Events\Incidents\IncidentUpdated;
-use Cachet\Facades\CachetView;
 use Cachet\Models\Schedule;
-use Cachet\View\RenderHook as CachetRenderHook;
 use Filament\Facades\Filament;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -94,25 +92,12 @@ class AppServiceProvider extends ServiceProvider
         $this->bootRoute();
         $this->bootNotifications();
         $this->bootAiAssistant();
-        $this->bootSubscribeBanner();
         $this->bootStatusPage();
     }
 
     private function bootStatusPage(): void
     {
         View::composer('cachet::status-page.index', StatusPageComposer::class);
-    }
-
-    private function bootSubscribeBanner(): void
-    {
-        // Only fired on Cachet pages that still render <x-cachet::header /> —
-        // typically the incident detail page. The home (status-page.index) is
-        // overridden in resources/views/vendor/cachet and ships its own
-        // header + subscribe CTA, so this hook does not duplicate there.
-        CachetView::registerRenderHook(
-            CachetRenderHook::STATUS_PAGE_NAVIGATION_AFTER,
-            fn (): string => view('cachet.subscribe-banner')->render(),
-        );
     }
 
     private function bootAiAssistant(): void

@@ -1,103 +1,88 @@
 <x-cachet::cachet :title="__('subscribe.title')">
     <x-cachet::header />
 
-    <div class="container mx-auto max-w-2xl px-4 py-10 sm:px-6 lg:px-8">
-        <h1 class="text-2xl font-semibold mb-2">{{ __('subscribe.title') }}</h1>
-        <p class="text-zinc-600 dark:text-zinc-400 mb-6">{{ __('subscribe.intro') }}</p>
+    <main class="es-shell es-shell-narrow">
+        <h1 class="es-page-title">{{ __('subscribe.title') }}</h1>
+        <p class="es-page-intro">{{ __('subscribe.intro') }}</p>
 
         @if (session('status'))
-            <div class="mb-6 rounded-md border border-green-200 bg-green-50 p-4 text-sm text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-300">
-                {{ session('status') }}
-            </div>
+            <div class="es-flash es-flash-success">{{ session('status') }}</div>
         @endif
 
         @if ($errors->any())
-            <div class="mb-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
-                <ul class="list-disc pl-5">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+            <div class="es-flash es-flash-error">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
             </div>
         @endif
 
-        <form method="POST" action="{{ route('subscribe.store') }}" class="space-y-6">
-            @csrf
+        <div class="es-form-card">
+            <form method="POST" action="{{ route('subscribe.store') }}">
+                @csrf
 
-            <div>
-                <label for="email" class="block text-sm font-medium mb-1">{{ __('subscribe.field.email') }}</label>
-                <input type="email" name="email" id="email" value="{{ old('email') }}"
-                    class="block w-full rounded-md border-zinc-300 shadow-sm focus:border-zinc-500 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
-                    placeholder="vous@exemple.com">
-            </div>
+                <div class="es-field">
+                    <label for="email" class="es-label">{{ __('subscribe.field.email') }}</label>
+                    <input type="email" name="email" id="email" value="{{ old('email') }}" class="es-input" placeholder="vous@exemple.com">
+                </div>
 
-            <div>
-                <label for="phone_number" class="block text-sm font-medium mb-1">{{ __('subscribe.field.phone') }}</label>
-                <input type="tel" name="phone_number" id="phone_number" value="{{ old('phone_number') }}"
-                    class="block w-full rounded-md border-zinc-300 shadow-sm focus:border-zinc-500 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
-                    placeholder="+41791234567">
-                <p class="mt-1 text-xs text-zinc-500">{{ __('subscribe.field.phone_help') }}</p>
-            </div>
+                <div class="es-field">
+                    <label for="phone_number" class="es-label">{{ __('subscribe.field.phone') }}</label>
+                    <input type="tel" name="phone_number" id="phone_number" value="{{ old('phone_number') }}" class="es-input" placeholder="+41791234567">
+                    <p class="es-help">{{ __('subscribe.field.phone_help') }}</p>
+                </div>
 
-            <fieldset>
-                <legend class="text-sm font-medium mb-2">{{ __('subscribe.field.scope') }}</legend>
+                <fieldset class="es-fieldset">
+                    <legend class="es-legend">{{ __('subscribe.field.scope') }}</legend>
 
-                <label class="flex items-center gap-2 mb-3">
-                    <input type="checkbox" name="global" value="1" {{ old('global', true) ? 'checked' : '' }}>
-                    <span>{{ __('subscribe.field.global') }}</span>
-                </label>
+                    <label class="es-checkbox">
+                        <input type="checkbox" name="global" value="1" {{ old('global', true) ? 'checked' : '' }}>
+                        <span>{{ __('subscribe.field.global') }}</span>
+                    </label>
 
-                <details class="mt-2">
-                    <summary class="cursor-pointer text-sm text-zinc-600 dark:text-zinc-400">{{ __('subscribe.field.choose_components') }}</summary>
-
-                    <div class="mt-4 space-y-4">
-                        @foreach ($componentGroups as $group)
-                            @if ($group->components->isNotEmpty())
-                                <div class="rounded-md border border-zinc-200 dark:border-zinc-800">
-                                    <div class="border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-semibold dark:border-zinc-800 dark:bg-zinc-900/40">
-                                        {{ $group->name }}
+                    <details style="margin-top: 16px;">
+                        <summary style="cursor: pointer; font-size: 13px; color: var(--es-text-soft);">{{ __('subscribe.field.choose_components') }}</summary>
+                        <div style="margin-top: 14px;">
+                            @foreach ($componentGroups as $group)
+                                @if ($group->components->isNotEmpty())
+                                    <div class="es-group-card">
+                                        <div class="es-group-head">{{ $group->name }}</div>
+                                        <div class="es-group-body">
+                                            @foreach ($group->components as $component)
+                                                <label class="es-checkbox">
+                                                    <input type="checkbox" name="components[]" value="{{ $component->id }}" @checked(in_array($component->id, old('components', []), true))>
+                                                    <span>{{ $component->name }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
                                     </div>
-                                    <div class="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2">
-                                        @foreach ($group->components as $component)
-                                            <label class="flex items-center gap-2">
-                                                <input type="checkbox" name="components[]" value="{{ $component->id }}"
-                                                    @checked(in_array($component->id, old('components', []), true))>
+                                @endif
+                            @endforeach
+                            @if ($ungroupedComponents->isNotEmpty())
+                                <div class="es-group-card">
+                                    <div class="es-group-head">{{ __('subscribe.field.other_components') }}</div>
+                                    <div class="es-group-body">
+                                        @foreach ($ungroupedComponents as $component)
+                                            <label class="es-checkbox">
+                                                <input type="checkbox" name="components[]" value="{{ $component->id }}" @checked(in_array($component->id, old('components', []), true))>
                                                 <span>{{ $component->name }}</span>
                                             </label>
                                         @endforeach
                                     </div>
                                 </div>
                             @endif
-                        @endforeach
+                        </div>
+                    </details>
+                </fieldset>
 
-                        @if ($ungroupedComponents->isNotEmpty())
-                            <div class="rounded-md border border-zinc-200 dark:border-zinc-800">
-                                <div class="border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-semibold dark:border-zinc-800 dark:bg-zinc-900/40">
-                                    {{ __('subscribe.field.other_components') }}
-                                </div>
-                                <div class="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2">
-                                    @foreach ($ungroupedComponents as $component)
-                                        <label class="flex items-center gap-2">
-                                            <input type="checkbox" name="components[]" value="{{ $component->id }}"
-                                                @checked(in_array($component->id, old('components', []), true))>
-                                            <span>{{ $component->name }}</span>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </details>
-            </fieldset>
-
-            <div class="pt-2">
-                <button type="submit"
-                    class="inline-flex justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm ring-1 ring-accent/30 transition hover:opacity-90">
-                    {{ __('subscribe.action.submit') }}
-                </button>
-            </div>
-        </form>
-    </div>
+                <div class="es-form-actions">
+                    <button type="submit" class="es-btn-primary">{{ __('subscribe.action.submit') }}</button>
+                </div>
+            </form>
+        </div>
+    </main>
 
     @include('subscribe.partials.global-toggle-script')
+
+    <x-cachet::footer />
 </x-cachet::cachet>

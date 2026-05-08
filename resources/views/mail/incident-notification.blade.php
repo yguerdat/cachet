@@ -19,9 +19,5 @@
 
 ---
 
-<small>
-[{{ __('mail.footer.manage') }}]({{ $manageUrl }}) — [{{ __('mail.footer.unsubscribe') }}]({{ $unsubscribeUrl }})
-
-© {{ now()->year }} {{ config('app.name') }}. {{ __('mail.footer.rights') }}
-</small>
+[{{ __('mail.footer.manage') }}]({{ $manageUrl }}) · [{{ __('mail.footer.unsubscribe') }}]({{ $unsubscribeUrl }})
 </x-mail::message>

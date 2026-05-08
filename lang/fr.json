@@ -53,7 +53,11 @@
 
     "mail.footer.manage": "Gérer mes abonnements",
     "mail.footer.unsubscribe": "Se désabonner",
-    "mail.footer.rights": "Tous droits réservés.",
+    "All rights reserved.": "Tous droits réservés.",
+    "Whoops!": "Oups !",
+    "Hello!": "Bonjour !",
+    "Regards": "Cordialement",
+    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below into your web browser:": "Si vous rencontrez un problème en cliquant sur « :actionText », copiez-collez l'URL ci-dessous dans votre navigateur :",
 
     "sms.incident.new_prefix": "Incident",
     "sms.incident.update_prefix": "MAJ incident",

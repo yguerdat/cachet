@@ -53,12 +53,53 @@ class StatusPageComposer
 
         $overall = $this->overallStatus($activeIncidents, $allComponents);
 
+        $globalUptime = $allComponents->isEmpty() ? 100.0 : round(
+            collect($uptimeByComponent)->avg('uptime_pct') ?? 100.0,
+            2,
+        );
+
+        $resolvedCount = $pastIncidents->count();
+        $mttrSeconds = $this->meanTimeToResolve($pastIncidents);
+
         $view->with([
             'uptimeByComponent' => $uptimeByComponent,
             'activeIncidents' => $activeIncidents,
             'pastIncidents' => $pastIncidents,
             'overall' => $overall,
+            'stats' => [
+                'global_uptime' => $globalUptime,
+                'active_count' => $activeIncidents->count(),
+                'resolved_30d' => $resolvedCount,
+                'mttr_seconds' => $mttrSeconds,
+            ],
         ]);
+    }
+
+    /**
+     * @param  iterable<Incident>  $incidents
+     */
+    private function meanTimeToResolve(iterable $incidents): ?int
+    {
+        $durations = [];
+        foreach ($incidents as $incident) {
+            $fixedAt = $incident->updates
+                ->where('status', IncidentStatusEnum::fixed)
+                ->sortByDesc('created_at')
+                ->first()?->created_at ?? $incident->updated_at;
+
+            if ($fixedAt && $incident->created_at) {
+                $diff = $fixedAt->diffInSeconds($incident->created_at);
+                if ($diff > 0) {
+                    $durations[] = $diff;
+                }
+            }
+        }
+
+        if (empty($durations)) {
+            return null;
+        }
+
+        return (int) (array_sum($durations) / count($durations));
     }
 
     /**

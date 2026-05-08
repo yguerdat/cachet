@@ -19,6 +19,7 @@ use App\Observers\ScheduleObserver;
 use App\Services\Ai\ClaudeWriter;
 use App\Services\Sms\SmsEagleClient;
 use App\Services\Url\SlinkShortener;
+use App\View\Composers\StatusPageComposer;
 use Cachet\Events\Incidents\IncidentCreated;
 use Cachet\Events\Incidents\IncidentUpdated;
 use Cachet\Facades\CachetView;
@@ -30,6 +31,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -93,6 +95,12 @@ class AppServiceProvider extends ServiceProvider
         $this->bootNotifications();
         $this->bootAiAssistant();
         $this->bootSubscribeBanner();
+        $this->bootStatusPage();
+    }
+
+    private function bootStatusPage(): void
+    {
+        View::composer('cachet::status-page.index', StatusPageComposer::class);
     }
 
     private function bootSubscribeBanner(): void

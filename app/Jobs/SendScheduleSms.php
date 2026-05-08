@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Contracts\SmsSender;
 use App\Contracts\UrlShortener;
-use Cachet\Cachet;
 use Cachet\Models\Schedule;
 use Cachet\Models\Subscriber;
 use Illuminate\Bus\Queueable;
@@ -35,12 +34,13 @@ class SendScheduleSms implements ShouldQueue
             return;
         }
 
-        $longUrl = url(Cachet::path());
+        $longUrl = route('status-page.schedule', $this->schedule);
         $shortUrl = $urlShortener->shorten($longUrl, 's'.$this->schedule->getKey());
 
-        $title = Str::limit($this->schedule->name, 60, '…');
+        // GSM-7 safe punctuation only.
+        $title = Str::limit($this->schedule->name, 60, '...');
         $prefix = $this->isUpdate ? __('sms.schedule.update_prefix') : __('sms.schedule.new_prefix');
-        $body = sprintf('[%s] %s — %s', $prefix, $title, $shortUrl);
+        $body = sprintf('[%s] %s - %s', $prefix, $title, $shortUrl);
 
         $smsSender->send($this->subscriber->phone_number, $body);
     }

@@ -37,9 +37,12 @@ class SendIncidentSms implements ShouldQueue
         $longUrl = route('cachet.status-page.incident', $this->incident);
         $shortUrl = $urlShortener->shorten($longUrl, 'i'.$this->incident->getKey());
 
-        $title = Str::limit($this->incident->name, 60, '…');
+        // GSM-7 safe characters only — ellipsis and em-dash are replaced by
+        // SMSeagle with '?' (or force the message into UCS-2, halving the
+        // per-message budget). Stick to plain ASCII punctuation.
+        $title = Str::limit($this->incident->name, 60, '...');
         $prefix = $this->isUpdate ? __('sms.incident.update_prefix') : __('sms.incident.new_prefix');
-        $body = sprintf('[%s] %s — %s', $prefix, $title, $shortUrl);
+        $body = sprintf('[%s] %s - %s', $prefix, $title, $shortUrl);
 
         $smsSender->send($this->subscriber->phone_number, $body);
     }

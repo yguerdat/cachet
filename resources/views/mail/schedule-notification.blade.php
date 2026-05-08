@@ -13,6 +13,10 @@
 {!! \Illuminate\Support\Str::of($schedule->message)->markdown() !!}
 @endif
 
+<x-mail::button :url="$scheduleUrl">
+Voir le détail de la maintenance
+</x-mail::button>
+
 ---
 
 [{{ __('mail.footer.manage') }}]({{ $manageUrl }}) · [{{ __('mail.footer.unsubscribe') }}]({{ $unsubscribeUrl }})

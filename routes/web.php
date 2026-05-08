@@ -1,12 +1,20 @@
 <?php
 
 use App\Http\Controllers\Admin\AiAssistantController;
+use App\Http\Controllers\StatusPage\ScheduleController;
 use App\Http\Controllers\Subscribe\ManageController;
 use App\Http\Controllers\Subscribe\SubscribeController;
 use App\Http\Controllers\Subscribe\UnsubscribeController;
 use Cachet\Cachet;
 use Filament\Http\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
+
+Route::prefix(Cachet::path())
+    ->middleware('web')
+    ->group(function (): void {
+        Route::get('schedules/{schedule}', [ScheduleController::class, 'show'])
+            ->name('status-page.schedule');
+    });
 
 Route::prefix(Cachet::path())
     ->as('subscribe.')

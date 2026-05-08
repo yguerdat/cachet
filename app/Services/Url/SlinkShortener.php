@@ -46,7 +46,7 @@ class SlinkShortener implements UrlShortener
             return $longUrl;
         }
 
-        return (string) ($response->json('shortUrl') ?? $longUrl);
+        return $this->forceHttps((string) ($response->json('shortUrl') ?? $longUrl));
     }
 
     private function shortenWithoutSlug(string $longUrl): string
@@ -65,7 +65,27 @@ class SlinkShortener implements UrlShortener
             return $longUrl;
         }
 
-        return (string) ($response->json('shortUrl') ?? $longUrl);
+        return $this->forceHttps((string) ($response->json('shortUrl') ?? $longUrl));
+    }
+
+    /**
+     * Force HTTPS on the returned short URL when our configured Slink base is
+     * already HTTPS. Some Shlink installs default to http:// in their generated
+     * short URLs even when the public host serves TLS — we override here so SMS
+     * recipients don't get a downgraded link.
+     */
+    private function forceHttps(string $url): string
+    {
+        if (! str_starts_with($this->baseUrl, 'https://')) {
+            return $url;
+        }
+        $baseHost = parse_url($this->baseUrl, PHP_URL_HOST);
+        $urlHost = parse_url($url, PHP_URL_HOST);
+        if ($baseHost && $baseHost === $urlHost) {
+            return preg_replace('#^http://#i', 'https://', $url, 1) ?? $url;
+        }
+
+        return $url;
     }
 
     private function buildSlug(?string $hint): string

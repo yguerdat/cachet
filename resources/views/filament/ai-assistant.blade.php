@@ -14,5 +14,5 @@
 <script>
     window.eseancesAi = @json($aiConfig);
 </script>
-<script src="{{ asset('vendor/eseances/ai-assistant.js') }}?v=1" defer></script>
+<script src="{{ asset('vendor/eseances/ai-assistant.js') }}?v=2" defer></script>
 @endif

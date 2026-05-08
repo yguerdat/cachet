@@ -70,29 +70,31 @@
             || null;
     }
 
-    function setLivewireField(fieldName, value) {
-        const probe = document.querySelector('[wire\\:model="data.' + fieldName + '"]')
-            || document.querySelector('[wire\\:model\\.live="data.' + fieldName + '"]')
-            || document.querySelector('[wire\\:model\\.lazy="data.' + fieldName + '"]')
-            || document.querySelector('[wire\\:model\\.defer="data.' + fieldName + '"]');
-        if (!probe) return false;
+    /**
+     * Find the Livewire form-page component that owns the form. We anchor on
+     * the title input because Filament's MarkdownEditor binds 'data.message'
+     * via Alpine's $wire.$entangle (not a wire:model attribute), so a DOM
+     * lookup on the message field returns nothing. Both fields live on the
+     * same component anyway.
+     */
+    function getFormComponent() {
+        const anchor = findTitleInput();
+        if (!anchor || !window.Livewire) return null;
+        const wireRoot = anchor.closest('[wire\\:id]');
+        if (!wireRoot) return null;
+        const id = wireRoot.getAttribute('wire:id');
+        return window.Livewire.find(id) || null;
+    }
 
-        const wireRoot = probe.closest('[wire\\:id]');
-        if (!wireRoot || !window.Livewire) return false;
-
-        const componentId = wireRoot.getAttribute('wire:id');
-        const component = window.Livewire.find(componentId);
+    function setLivewireField(component, fieldName, value) {
         if (!component) return false;
-
-        component.set('data.' + fieldName, value, false);
-
-        if (probe instanceof HTMLInputElement || probe instanceof HTMLTextAreaElement) {
-            probe.value = value;
-            probe.dispatchEvent(new Event('input', { bubbles: true }));
-            probe.dispatchEvent(new Event('change', { bubbles: true }));
+        try {
+            component.set('data.' + fieldName, value);
+            return true;
+        } catch (e) {
+            console.warn('[eseances-ai] set failed for', fieldName, e);
+            return false;
         }
-
-        return true;
     }
 
     function buildModal(mode, onSubmit) {
@@ -213,11 +215,17 @@
     }
 
     function applySuggestion(mode, suggestion) {
+        const component = getFormComponent();
+        if (!component) {
+            console.warn('[eseances-ai] No Livewire form component found, suggestion lost.');
+            return;
+        }
+
         if (suggestion.title && mode !== 'incident-update') {
-            setLivewireField('name', suggestion.title);
+            setLivewireField(component, 'name', suggestion.title);
         }
         if (suggestion.description) {
-            setLivewireField('message', suggestion.description);
+            setLivewireField(component, 'message', suggestion.description);
         }
     }
 

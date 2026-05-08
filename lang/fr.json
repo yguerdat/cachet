@@ -51,9 +51,9 @@
     "mail.schedule.starts_at": "Début prévu",
     "mail.schedule.ends_at": "Fin prévue",
 
-    "mail.footer.preferences": "Préférences :",
-    "mail.footer.manage": "gérer mes abonnements",
-    "mail.footer.unsubscribe": "se désabonner",
+    "mail.footer.manage": "Gérer mes abonnements",
+    "mail.footer.unsubscribe": "Se désabonner",
+    "mail.footer.rights": "Tous droits réservés.",
 
     "sms.incident.new_prefix": "Incident",
     "sms.incident.update_prefix": "MAJ incident",

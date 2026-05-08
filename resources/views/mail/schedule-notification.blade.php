@@ -10,12 +10,14 @@
 @endif
 
 @if (!empty($schedule->message))
-{!! $schedule->message !!}
+{!! \Illuminate\Support\Str::of($schedule->message)->markdown() !!}
 @endif
 
 ---
 
 <small>
-{{ __('mail.footer.preferences') }} [{{ __('mail.footer.manage') }}]({{ $manageUrl }}) — [{{ __('mail.footer.unsubscribe') }}]({{ $unsubscribeUrl }})
+[{{ __('mail.footer.manage') }}]({{ $manageUrl }}) — [{{ __('mail.footer.unsubscribe') }}]({{ $unsubscribeUrl }})
+
+© {{ now()->year }} {{ config('app.name') }}. {{ __('mail.footer.rights') }}
 </small>
 </x-mail::message>

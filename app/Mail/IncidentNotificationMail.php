@@ -33,16 +33,36 @@ class IncidentNotificationMail extends Mailable implements ShouldQueue
 
     public function content(): Content
     {
+        $latestUpdate = $this->incident->updates()->latest('created_at')->first();
+        $displayStatus = $latestUpdate?->status ?? $this->incident->status;
+        $displayMessage = $latestUpdate?->message ?? $this->incident->message;
+
         return new Content(
             markdown: 'mail.incident-notification',
             with: [
                 'incident' => $this->incident,
                 'subscriber' => $this->subscriber,
                 'isUpdate' => $this->isUpdate,
+                'displayStatus' => $displayStatus,
+                'displayMessage' => $displayMessage,
+                'statusColor' => $this->statusColor($displayStatus),
                 'incidentUrl' => route('cachet.status-page.incident', $this->incident),
                 'manageUrl' => route('subscribe.manage', $this->subscriber),
                 'unsubscribeUrl' => route('subscribe.unsubscribe', $this->subscriber),
             ],
         );
+    }
+
+    private function statusColor(mixed $status): string
+    {
+        $name = $status instanceof \BackedEnum ? $status->name : (string) $status;
+
+        return match ($name) {
+            'investigating' => '#eab308',
+            'identified' => '#f97316',
+            'watching' => '#3b82f6',
+            'fixed' => '#22c55e',
+            default => '#71717a',
+        };
     }
 }

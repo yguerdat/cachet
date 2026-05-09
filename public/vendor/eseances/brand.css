@@ -37,6 +37,9 @@ body, body *:not(svg):not(path):not(circle):not(line):not(polyline):not(rect) { 
 .es-header { background: var(--es-card); border-bottom: 1px solid var(--es-border); }
 .es-header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 24px; }
 .es-logo-link { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+.es-logo-link picture { display: block; line-height: 0; }
+.es-logo-link picture img,
+.es-logo-link picture source,
 .es-logo-img { height: 44px; width: auto; display: block; }
 .es-logo-tag { font-size: 11px; color: var(--es-text-soft); font-weight: 500; letter-spacing: 0.02em; padding-left: 14px; border-left: 1px solid var(--es-border); line-height: 1.3; }
 @media (max-width: 640px) { .es-logo-tag { display: none; } }

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ asset('vendor/eseances/brand.css') }}?v=7">
+<link rel="stylesheet" href="{{ asset('vendor/eseances/brand.css') }}?v=8">
 <header class="es-header">
     <div class="es-header-inner">
         <a href="{{ url(\Cachet\Cachet::path()) }}" class="es-logo-link" aria-label="eSéances Status">

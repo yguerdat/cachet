@@ -24,6 +24,7 @@ use Cachet\Events\Incidents\IncidentCreated;
 use Cachet\Events\Incidents\IncidentUpdated;
 use Cachet\Models\Schedule;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Toggle;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -93,6 +94,23 @@ class AppServiceProvider extends ServiceProvider
         $this->bootNotifications();
         $this->bootAiAssistant();
         $this->bootStatusPage();
+        $this->bootFilamentFormDefaults();
+    }
+
+    /**
+     * Default the Filament "Notifications" toggle to ON when creating a new
+     * incident. Operators were silently forgetting to tick it (2/2 cases on
+     * our prod) and subscribers got no mail/SMS. Mirrors the default behavior
+     * of Atlassian Statuspage; the operator can always untick before saving
+     * for internal corrections.
+     */
+    private function bootFilamentFormDefaults(): void
+    {
+        Toggle::configureUsing(function (Toggle $toggle): void {
+            if ($toggle->getName() === 'notifications') {
+                $toggle->default(true);
+            }
+        });
     }
 
     private function bootStatusPage(): void
